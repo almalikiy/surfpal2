@@ -16,7 +16,7 @@ Use your AI subscriptions (Claude, ChatGPT, Gemini, GitHub Copilot) with any cod
 
 ## Quick Start
 
-1. Download from [Releases](https://github.com/heyhuynhgiabuu/surfpal/releases)
+1. Download from [Releases](https://github.com/almalikiy/surfpal2/releases)
 2. Launch SurfPal and start the proxy
 3. Connect your AI accounts (OAuth or auth files)
 4. Point your coding tool to `http://localhost:8317/v1` 
