@@ -201,15 +201,15 @@ export function WelcomePage() {
 					<img
 						src={
 							themeStore.resolvedTheme() === "dark"
-								? "/proxypal-white.png"
-								: "/proxypal-black.png"
+								? "/surfpal-white.png"
+								: "/surfpal-black.png"
 						}
-						alt="ProxyPal Logo"
+						alt="SurfPal Logo"
 						class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-contain"
 					/>
 					<div>
 						<h1 class="font-bold text-base sm:text-lg text-gray-900 dark:text-gray-100">
-							ProxyPal
+							SurfPal
 						</h1>
 						<p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
 							Use your AI subscriptions everywhere

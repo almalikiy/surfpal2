@@ -37,13 +37,13 @@ const toolInfo: Record<
       {
         title: "Set API Key",
         content:
-          "Enter any string (e.g., 'proxypal') - the proxy handles authentication",
+          "Enter any string (e.g., 'surfpal') - the proxy handles authentication",
         copyable: false,
       },
       {
         title: "Select Model",
         content:
-          "Choose any model - ProxyPal will route to your connected providers",
+          "Choose any model - SurfPal will route to your connected providers",
       },
     ],
   },
@@ -68,7 +68,7 @@ const toolInfo: Record<
       },
       {
         title: "Set API Key",
-        content: "Enter any string (e.g., 'proxypal')",
+        content: "Enter any string (e.g., 'surfpal')",
       },
     ],
   },
@@ -122,11 +122,11 @@ export function SetupModal(props: SetupModalProps) {
         {
           models: [
             {
-              title: "ProxyPal",
+              title: "SurfPal",
               provider: "openai",
               model: "gpt-4",
               apiBase: endpoint,
-              apiKey: "proxypal",
+              apiKey: "surfpal",
             },
           ],
         },

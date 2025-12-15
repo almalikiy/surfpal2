@@ -84,7 +84,7 @@ export function NoProvidersEmptyState(props: { onConnect: () => void }) {
         </svg>
       }
       title="No providers connected"
-      description="Connect your AI accounts to start using ProxyPal with your favorite coding tools."
+      description="Connect your AI accounts to start using SurfPal with your favorite coding tools."
       action={{
         label: "Connect your first provider",
         onClick: props.onConnect,
@@ -170,7 +170,7 @@ export function GettingStartedEmptyState(props: {
               You're all set!
             </h3>
             <p class="text-sm text-green-700 dark:text-green-300">
-              ProxyPal is configured and ready. Start using your AI tools - all
+              SurfPal is configured and ready. Start using your AI tools - all
               requests will be routed through your connected accounts.
             </p>
           </div>
@@ -225,7 +225,7 @@ export function GettingStartedEmptyState(props: {
           <div class="flex items-center justify-between mb-1">
             <h3 class="font-semibold text-gray-900 dark:text-gray-100">
               {completedSteps() === 0
-                ? "Welcome to ProxyPal!"
+                ? "Welcome to SurfPal!"
                 : "Almost there!"}
             </h3>
             <span class="text-xs text-gray-500 dark:text-gray-400">

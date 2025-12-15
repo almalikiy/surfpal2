@@ -234,7 +234,7 @@ export function LogViewerPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `proxypal-logs-${new Date().toISOString().split("T")[0]}.txt`;
+    a.download = `surfpal-logs-${new Date().toISOString().split("T")[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     toastStore.success("Logs downloaded");

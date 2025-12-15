@@ -877,10 +877,10 @@ export function SettingsPage() {
 					<img
 						src={
 							themeStore.resolvedTheme() === "dark"
-								? "/proxypal-white.png"
-								: "/proxypal-black.png"
+								? "/surfpal-white.png"
+								: "/surfpal-black.png"
 						}
-						alt="ProxyPal Logo"
+						alt="SurfPal Logo"
 						class="w-8 h-8 rounded-xl object-contain"
 					/>
 					<h1 class="font-bold text-lg text-gray-900 dark:text-gray-100">
@@ -921,7 +921,7 @@ export function SettingsPage() {
 						<div class="space-y-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
 							<Switch
 								label="Launch at login"
-								description="Start ProxyPal automatically when you log in"
+								description="Start SurfPal automatically when you log in"
 								checked={config().launchAtLogin}
 								onChange={(checked) =>
 									handleConfigChange("launchAtLogin", checked)
@@ -932,7 +932,7 @@ export function SettingsPage() {
 
 							<Switch
 								label="Auto-start proxy"
-								description="Start the proxy server when ProxyPal launches"
+								description="Start the proxy server when SurfPal launches"
 								checked={config().autoStart}
 								onChange={(checked) => handleConfigChange("autoStart", checked)}
 							/>
@@ -3237,7 +3237,7 @@ export function SettingsPage() {
 														{updaterSupport()?.reason}
 													</p>
 													<a
-														href="https://github.com/heyhuynhgiabuu/proxypal/releases"
+														href="https://github.com/heyhuynhgiabuu/surfpal/releases"
 														target="_blank"
 														rel="noopener noreferrer"
 														class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-lg transition-colors"
@@ -3367,15 +3367,15 @@ export function SettingsPage() {
 								<img
 									src={
 										themeStore.resolvedTheme() === "dark"
-											? "/proxypal-white.png"
-											: "/proxypal-black.png"
+											? "/surfpal-white.png"
+											: "/surfpal-black.png"
 									}
-									alt="ProxyPal Logo"
+									alt="SurfPal Logo"
 									class="w-12 h-12 rounded-xl object-contain"
 								/>
 							</div>
 							<h3 class="font-bold text-gray-900 dark:text-gray-100">
-								ProxyPal
+								SurfPal
 							</h3>
 							<p class="text-sm text-gray-500 dark:text-gray-400">
 								Version 0.1.48

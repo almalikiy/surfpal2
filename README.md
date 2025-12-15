@@ -1,8 +1,8 @@
-# ProxyPal
+# SurfPal
 
 Use your AI subscriptions (Claude, ChatGPT, Gemini, GitHub Copilot) with any coding tool. Native desktop app wrapping [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI).
 
-![ProxyPal Dashboard](src/assets/dashboard.png)
+![SurfPal Dashboard](src/assets/dashboard.png)
 
 ## Features
 
@@ -16,17 +16,17 @@ Use your AI subscriptions (Claude, ChatGPT, Gemini, GitHub Copilot) with any cod
 
 ## Quick Start
 
-1. Download from [Releases](https://github.com/heyhuynhgiabuu/proxypal/releases)
-2. Launch ProxyPal and start the proxy
+1. Download from [Releases](https://github.com/heyhuynhgiabuu/surfpal/releases)
+2. Launch SurfPal and start the proxy
 3. Connect your AI accounts (OAuth or auth files)
-4. Point your coding tool to `http://localhost:8317/v1`
+4. Point your coding tool to `http://localhost:8317/v1` 
 
 ### macOS Users
 
 The app is not signed with an Apple Developer certificate yet. If macOS blocks the app, run:
 
 ```bash
-xattr -cr /Applications/ProxyPal.app
+xattr -cr /Applications/SurfPal.app
 ```
 
 Then open the app again.
@@ -80,7 +80,7 @@ If adding support for a new coding agent:
 
 ## Support
 
-If you find ProxyPal useful, consider [buying me a coffee](https://buymeacoffee.com/heyhuynhgiabuu).
+If you find SurfPal useful, consider [buying me a coffee](https://buymeacoffee.com/heyhuynhgiabuu).
 
 ## License
 

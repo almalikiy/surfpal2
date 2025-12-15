@@ -93,12 +93,12 @@ function createAppStore() {
 		if (status.running && !wasRunning) {
 			setProxyStartTime(Date.now());
 			if (showNotification) {
-				showSystemNotification("ProxyPal", "Proxy server is now running");
+				showSystemNotification("SurfPal", "Proxy server is now running");
 			}
 		} else if (!status.running && wasRunning) {
 			setProxyStartTime(null);
 			if (showNotification) {
-				showSystemNotification("ProxyPal", "Proxy server has stopped");
+				showSystemNotification("SurfPal", "Proxy server has stopped");
 			}
 		}
 	};
