@@ -100,7 +100,7 @@ export function SetupWizard(props: SetupWizardProps) {
             Setup Your Tools
           </h2>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            Configure your AI coding tools to use ProxyPal
+            Configure your AI coding tools to use SurfPal
           </p>
         </div>
         <Show when={props.onClose}>
@@ -349,7 +349,7 @@ export function SetupWizard(props: SetupWizardProps) {
               <div class="mb-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    ProxyPal Endpoint
+                    SurfPal Endpoint
                   </span>
                   <button
                     class="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
@@ -542,7 +542,7 @@ export function SetupWizardCard(props: { onOpenWizard: () => void }) {
                   )}
                 </>
               ) : (
-                "Set up your AI coding tools to use ProxyPal."
+                "Set up your AI coding tools to use SurfPal."
               )}
             </p>
           </Show>

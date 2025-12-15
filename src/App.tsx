@@ -31,15 +31,15 @@ function App() {
 								<img
 									src={
 										themeStore.resolvedTheme() === "dark"
-											? "/proxypal-white.png"
-											: "/proxypal-black.png"
+											? "/surfpal-white.png"
+											: "/surfpal-black.png"
 									}
-									alt="ProxyPal Logo"
+									alt="SurfPal Logo"
 									class="w-16 h-16 rounded-2xl object-contain"
 								/>
 							</div>
 							<p class="text-gray-500 dark:text-gray-400">
-								Loading ProxyPal...
+								Loading SurfPal...
 							</p>
 						</div>
 					</div>

@@ -1,4 +1,4 @@
-# ProxyPal Testing Plan - Recent Fixes
+# SurfPal Testing Plan - Recent Fixes
 
 ## Recent Changes Summary
 
@@ -110,7 +110,7 @@
 
 ### Prerequisites
 ```bash
-cd /Users/huynhgiabuu/dev/projects/proxypal
+cd /Users/huynhgiabuu/dev/projects/surfpal
 
 # Install dependencies
 pnpm install
@@ -133,7 +133,7 @@ pnpm tauri dev
 # Build for macOS
 pnpm tauri build
 
-# Output: src-tauri/target/release/bundle/macos/ProxyPal.app
+# Output: src-tauri/target/release/bundle/macos/SurfPal.app
 # Open and test features
 ```
 

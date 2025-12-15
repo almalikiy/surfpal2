@@ -354,7 +354,7 @@ impl Default for AppState {
 fn get_config_path() -> std::path::PathBuf {
     let config_dir = dirs::config_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join("proxypal");
+        .join("surfpal");
     std::fs::create_dir_all(&config_dir).ok();
     config_dir.join("config.json")
 }
@@ -362,7 +362,7 @@ fn get_config_path() -> std::path::PathBuf {
 fn get_auth_path() -> std::path::PathBuf {
     let config_dir = dirs::config_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join("proxypal");
+        .join("surfpal");
     std::fs::create_dir_all(&config_dir).ok();
     config_dir.join("auth.json")
 }
@@ -370,7 +370,7 @@ fn get_auth_path() -> std::path::PathBuf {
 fn get_history_path() -> std::path::PathBuf {
     let config_dir = dirs::config_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join("proxypal");
+        .join("surfpal");
     std::fs::create_dir_all(&config_dir).ok();
     config_dir.join("history.json")
 }
@@ -817,7 +817,7 @@ async fn start_proxy(
     {
         let mut process = state.proxy_process.lock().unwrap();
         if let Some(child) = process.take() {
-            println!("[ProxyPal] Killing tracked proxy process");
+            println!("[SurfPal] Killing tracked proxy process");
             let _ = child.kill(); // Ignore errors, process might already be dead
         }
     }
@@ -827,13 +827,13 @@ async fn start_proxy(
     #[cfg(unix)]
     {
         // Kill by port
-        println!("[ProxyPal] Killing any process on port {}", port);
+        println!("[SurfPal] Killing any process on port {}", port);
         let _ = std::process::Command::new("sh")
             .args(["-c", &format!("lsof -ti :{} | xargs kill -9 2>/dev/null", port)])
             .output();
         
         // Also kill any orphaned cliproxyapi processes by name
-        println!("[ProxyPal] Killing any orphaned cliproxyapi processes");
+        println!("[SurfPal] Killing any orphaned cliproxyapi processes");
         let _ = std::process::Command::new("sh")
             .args(["-c", "pkill -9 -f cliproxyapi 2>/dev/null"])
             .output();
@@ -857,7 +857,7 @@ async fn start_proxy(
     // Create config directory and config file for CLIProxyAPI
     let config_dir = dirs::config_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join("proxypal");
+        .join("surfpal");
     std::fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
     
     let proxy_config_path = config_dir.join("proxy-config.yaml");
@@ -1124,11 +1124,11 @@ payload:
     // Always regenerate config on start because CLIProxyAPI hashes the secret-key in place
     // and we need the plaintext key for Management API access
     let proxy_config = format!(
-        r#"# ProxyPal generated config
+        r#"# SurfPal generated config
 port: {}
 auth-dir: "~/.cli-proxy-api"
 api-keys:
-  - "proxypal-local"
+  - "surfpal-local"
 debug: {}
 usage-statistics-enabled: {}
 logging-to-file: {}
@@ -1142,7 +1142,7 @@ quota-exceeded:
 # Enable Management API for OAuth flows
 remote-management:
   allow-remote: true
-  secret-key: "proxypal-mgmt-key"
+  secret-key: "surfpal-mgmt-key"
   disable-control-panel: true
 
 {}{}{}{}{}# Amp CLI Integration - enables amp login and management routes
@@ -1229,7 +1229,7 @@ ampcode:
     let client = reqwest::Client::new();
     let _ = client
         .put(&enable_url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({"value": config.usage_stats_enabled}))
         .send()
         .await;
@@ -1238,7 +1238,7 @@ ampcode:
     let force_mappings_url = format!("http://127.0.0.1:{}/v0/management/ampcode/force-model-mappings", port);
     let _ = client
         .put(&force_mappings_url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({"value": config.force_model_mappings}))
         .send()
         .await;
@@ -1266,7 +1266,7 @@ ampcode:
         let usage_url = format!("http://127.0.0.1:{}/v0/management/usage", port);
         let _ = client
             .get(&usage_url)
-            .header("X-Management-Key", "proxypal-mgmt-key")
+            .header("X-Management-Key", "surfpal-mgmt-key")
             .timeout(std::time::Duration::from_secs(5))
             .send()
             .await;
@@ -1307,7 +1307,7 @@ async fn stop_proxy(
     {
         let mut process = state.proxy_process.lock().unwrap();
         if let Some(child) = process.take() {
-            println!("[ProxyPal] Killing tracked proxy process");
+            println!("[SurfPal] Killing tracked proxy process");
             let _ = child.kill();
         }
     }
@@ -1315,7 +1315,7 @@ async fn stop_proxy(
     // Also kill any orphaned cliproxyapi processes by name (belt and suspenders)
     #[cfg(unix)]
     {
-        println!("[ProxyPal] Cleaning up any orphaned cliproxyapi processes");
+        println!("[SurfPal] Cleaning up any orphaned cliproxyapi processes");
         let _ = std::process::Command::new("sh")
             .args(["-c", "pkill -9 -f cliproxyapi 2>/dev/null"])
             .output();
@@ -1405,7 +1405,7 @@ async fn start_copilot(
         return Err(format!(
             "Node.js is required for GitHub Copilot support.\n\n\
             Checked paths: {}\n\n\
-            Please install Node.js from https://nodejs.org/ or via a version manager (nvm, volta, fnm) and restart ProxyPal.",
+            Please install Node.js from https://nodejs.org/ or via a version manager (nvm, volta, fnm) and restart SurfPal.",
             if checked.is_empty() { "none".to_string() } else { checked }
         ));
     }
@@ -1432,7 +1432,7 @@ async fn start_copilot(
         let npx_bin = detection.npx_bin.clone()
             .ok_or_else(|| format!(
                 "Neither bunx nor npx found (required to run copilot-api).\n\n\
-                Install bun (https://bun.sh) or Node.js (https://nodejs.org/) and restart ProxyPal."
+                Install bun (https://bun.sh) or Node.js (https://nodejs.org/) and restart SurfPal."
             ))?;
         println!("[copilot] Using npx: {} copilot-api@latest", npx_bin);
         (npx_bin, vec!["copilot-api@latest".to_string()])
@@ -2414,7 +2414,7 @@ async fn sync_usage_from_proxy(state: State<'_, AppState>) -> Result<RequestHist
     
     let response = client
         .get(&usage_url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .timeout(std::time::Duration::from_secs(5))
         .send()
         .await
@@ -2541,7 +2541,7 @@ async fn open_oauth(app: tauri::AppHandle, state: State<'_, AppState>, provider:
     let client = reqwest::Client::new();
     let response = client
         .get(&endpoint)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get OAuth URL: {}. Is the proxy running?", e))?;
@@ -2599,7 +2599,7 @@ async fn poll_oauth_status(state: State<'_, AppState>, oauth_state: String) -> R
     let client = reqwest::Client::new();
     let response = client
         .get(&endpoint)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to poll OAuth status: {}", e))?;
@@ -2899,7 +2899,7 @@ async fn check_provider_health(state: State<'_, AppState>) -> Result<ProviderHea
     // Check proxy health by requesting models endpoint
     let start = std::time::Instant::now();
     let response = client.get(&endpoint)
-        .header("Authorization", "Bearer proxypal-local")
+        .header("Authorization", "Bearer surfpal-local")
         .send()
         .await;
     let latency = start.elapsed().as_millis() as u64;
@@ -2991,7 +2991,7 @@ async fn test_agent_connection(state: State<'_, AppState>, agent_id: String) -> 
     
     let start = std::time::Instant::now();
     let response = client.get(&endpoint)
-        .header("Authorization", "Bearer proxypal-local")
+        .header("Authorization", "Bearer surfpal-local")
         .send()
         .await;
     let latency = start.elapsed().as_millis() as u64;
@@ -3058,7 +3058,7 @@ async fn get_available_models(state: State<'_, AppState>) -> Result<Vec<Availabl
     let endpoint = format!("http://localhost:{}/v1/models", config.port);
     
     let response = match client.get(&endpoint)
-        .header("Authorization", "Bearer proxypal-local")
+        .header("Authorization", "Bearer surfpal-local")
         .send()
         .await
     {
@@ -3203,7 +3203,7 @@ async fn test_openai_provider(base_url: String, api_key: String) -> Result<Provi
 // Handle deep link OAuth callback
 fn handle_deep_link(app: &tauri::AppHandle, urls: Vec<url::Url>) {
     for url in urls {
-        if url.scheme() == "proxypal" && url.path() == "/oauth/callback" {
+        if url.scheme() == "surfpal" && url.path() == "/oauth/callback" {
             // Parse query parameters
             let params: std::collections::HashMap<_, _> = url.query_pairs().collect();
 
@@ -3240,7 +3240,7 @@ fn handle_deep_link(app: &tauri::AppHandle, urls: Vec<url::Url>) {
 fn setup_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let toggle_item = MenuItem::with_id(app, "toggle", "Toggle Proxy", true, None::<&str>)?;
     let dashboard_item = MenuItem::with_id(app, "dashboard", "Open Dashboard", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(app, "quit", "Quit ProxyPal", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "quit", "Quit SurfPal", true, None::<&str>)?;
 
     let menu = Menu::with_items(app, &[&toggle_item, &dashboard_item, &quit_item])?;
 
@@ -3248,7 +3248,7 @@ fn setup_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
         .show_menu_on_left_click(false)
-        .tooltip("ProxyPal - Proxy stopped")
+        .tooltip("SurfPal - Proxy stopped")
         .on_menu_event(move |app, event| match event.id.as_ref() {
             "toggle" => {
                 let app_state = app.state::<AppState>();
@@ -3433,9 +3433,9 @@ fn detect_cli_agents(state: State<AppState>) -> Vec<AgentStatus> {
     // Check for global opencode.json in ~/.config/opencode/opencode.json
     let opencode_global_config = home.join(".config/opencode/opencode.json");
     let opencode_configured = if opencode_global_config.exists() {
-        // Check if our proxypal provider is configured
+        // Check if our surfpal provider is configured
         std::fs::read_to_string(&opencode_global_config)
-            .map(|content| content.contains("proxypal") && content.contains(&endpoint))
+            .map(|content| content.contains("surfpal") && content.contains(&endpoint))
             .unwrap_or(false)
     } else {
         false
@@ -3692,7 +3692,7 @@ fn get_model_display_name(model_id: &str, owned_by: &str) -> String {
     }
 }
 
-// Configure a CLI agent with ProxyPal
+// Configure a CLI agent with SurfPal
 #[tauri::command]
 async fn configure_cli_agent(state: State<'_, AppState>, agent_id: String, models: Vec<AvailableModel>) -> Result<serde_json::Value, String> {
     let (port, endpoint, endpoint_v1) = {
@@ -3737,7 +3737,7 @@ async fn configure_cli_agent(state: State<'_, AppState>, agent_id: String, model
             // Build env config for Claude Code settings.json
             let env_config = serde_json::json!({
                 "ANTHROPIC_BASE_URL": endpoint,
-                "ANTHROPIC_AUTH_TOKEN": "proxypal-local",
+                "ANTHROPIC_AUTH_TOKEN": "surfpal-local",
                 "ANTHROPIC_DEFAULT_OPUS_MODEL": opus_model,
                 "ANTHROPIC_DEFAULT_SONNET_MODEL": sonnet_model,
                 "ANTHROPIC_DEFAULT_HAIKU_MODEL": haiku_model
@@ -3750,7 +3750,7 @@ async fn configure_cli_agent(state: State<'_, AppState>, agent_id: String, model
                         // Merge env into existing config
                         if let Some(env) = existing_json.get_mut("env") {
                             if let Some(obj) = env.as_object_mut() {
-                                // Update ProxyPal-related env vars
+                                // Update SurfPal-related env vars
                                 obj.insert("ANTHROPIC_BASE_URL".to_string(), env_config["ANTHROPIC_BASE_URL"].clone());
                                 obj.insert("ANTHROPIC_AUTH_TOKEN".to_string(), env_config["ANTHROPIC_AUTH_TOKEN"].clone());
                                 obj.insert("ANTHROPIC_DEFAULT_OPUS_MODEL".to_string(), env_config["ANTHROPIC_DEFAULT_OPUS_MODEL"].clone());
@@ -3775,15 +3775,15 @@ async fn configure_cli_agent(state: State<'_, AppState>, agent_id: String, model
             std::fs::write(&config_path, &config_str).map_err(|e| e.to_string())?;
             
             // Create a reference file with all available model options from each provider
-            let reference_path = config_dir.join("proxypal-models.md");
-            let reference_content = format!(r#"# ProxyPal Model Reference for Claude Code
+            let reference_path = config_dir.join("surfpal-models.md");
+            let reference_content = format!(r#"# SurfPal Model Reference for Claude Code
 
 Edit your `~/.claude/settings.json` and replace the model values in the `env` section.
 
 ## Current Configuration
 ```json
 "ANTHROPIC_BASE_URL": "{}",
-"ANTHROPIC_AUTH_TOKEN": "proxypal-local",
+"ANTHROPIC_AUTH_TOKEN": "surfpal-local",
 "ANTHROPIC_DEFAULT_OPUS_MODEL": "{}",
 "ANTHROPIC_DEFAULT_SONNET_MODEL": "{}",
 "ANTHROPIC_DEFAULT_HAIKU_MODEL": "{}"
@@ -3857,7 +3857,7 @@ Edit your `~/.claude/settings.json` and replace the model values in the `env` se
 ```
 
 ---
-Generated by ProxyPal. Run `claude` to start using Claude Code.
+Generated by SurfPal. Run `claude` to start using Claude Code.
 "#, endpoint, opus_model, sonnet_model, haiku_model);
             
             std::fs::write(&reference_path, &reference_content).map_err(|e| e.to_string())?;
@@ -3867,7 +3867,7 @@ Generated by ProxyPal. Run `claude` to start using Claude Code.
                 "configType": "config",
                 "configPath": config_path.to_string_lossy(),
                 "modelsConfigured": models.len(),
-                "instructions": format!("ProxyPal configured for Claude Code. See {} for all available model options from different providers.", reference_path.to_string_lossy())
+                "instructions": format!("SurfPal configured for Claude Code. See {} for all available model options from different providers.", reference_path.to_string_lossy())
             }))
         },
         
@@ -3877,7 +3877,7 @@ Generated by ProxyPal. Run `claude` to start using Claude Code.
             std::fs::create_dir_all(&codex_dir).map_err(|e| e.to_string())?;
             
             // Write config.toml
-            let config_content = format!(r#"# ProxyPal - Codex Configuration
+            let config_content = format!(r#"# SurfPal - Codex Configuration
 model_provider = "cliproxyapi"
 model = "gpt-5-codex"
 model_reasoning_effort = "high"
@@ -3893,7 +3893,7 @@ wire_api = "responses"
             
             // Write auth.json
             let auth_content = r#"{
-  "OPENAI_API_KEY": "proxypal-local"
+  "OPENAI_API_KEY": "surfpal-local"
 }"#;
             let auth_path = codex_dir.join("auth.json");
             std::fs::write(&auth_path, auth_content).map_err(|e| e.to_string())?;
@@ -3909,13 +3909,13 @@ wire_api = "responses"
 
         "gemini-cli" => {
             // Generate shell config for Gemini CLI
-            let shell_config = format!(r#"# ProxyPal - Gemini CLI Configuration
+            let shell_config = format!(r#"# SurfPal - Gemini CLI Configuration
 # Option 1: OAuth mode (local only)
 export CODE_ASSIST_ENDPOINT="{}"
 
 # Option 2: API Key mode (works with any IP/domain)
 # export GOOGLE_GEMINI_BASE_URL="{}"
-# export GEMINI_API_KEY="proxypal-local"
+# export GEMINI_API_KEY="surfpal-local"
 "#, endpoint, endpoint);
 
             Ok(serde_json::json!({
@@ -3932,7 +3932,7 @@ export CODE_ASSIST_ENDPOINT="{}"
             std::fs::create_dir_all(&factory_dir).map_err(|e| e.to_string())?;
             
             // Build dynamic custom_models array from available models
-            let proxypal_models: Vec<serde_json::Value> = models.iter().map(|m| {
+            let surfpal_models: Vec<serde_json::Value> = models.iter().map(|m| {
                 let (base_url, provider) = match m.owned_by.as_str() {
                     "anthropic" => (endpoint.clone(), "anthropic"),
                     _ => (format!("{}/v1", endpoint), "openai"),
@@ -3940,7 +3940,7 @@ export CODE_ASSIST_ENDPOINT="{}"
                 serde_json::json!({
                     "model": m.id,
                     "base_url": base_url,
-                    "api_key": "proxypal-local",
+                    "api_key": "surfpal-local",
                     "provider": provider
                 })
             }).collect();
@@ -3951,39 +3951,39 @@ export CODE_ASSIST_ENDPOINT="{}"
             let final_config = if config_path.exists() {
                 if let Ok(existing) = std::fs::read_to_string(&config_path) {
                     if let Ok(mut existing_json) = serde_json::from_str::<serde_json::Value>(&existing) {
-                        // Get existing custom_models, filter out proxypal entries, then add new ones
+                        // Get existing custom_models, filter out surfpal entries, then add new ones
                         let mut merged_models: Vec<serde_json::Value> = Vec::new();
                         
-                        // Keep existing models that are NOT from proxypal (don't have proxypal-local api_key)
+                        // Keep existing models that are NOT from surfpal (don't have surfpal-local api_key)
                         if let Some(existing_models) = existing_json.get("custom_models").and_then(|v| v.as_array()) {
                             for model in existing_models {
-                                let is_proxypal = model.get("api_key")
+                                let is_surfpal = model.get("api_key")
                                     .and_then(|v| v.as_str())
-                                    .map(|s| s == "proxypal-local")
+                                    .map(|s| s == "surfpal-local")
                                     .unwrap_or(false);
-                                if !is_proxypal {
+                                if !is_surfpal {
                                     merged_models.push(model.clone());
                                 }
                             }
                         }
                         
-                        // Add all proxypal models
-                        merged_models.extend(proxypal_models);
+                        // Add all surfpal models
+                        merged_models.extend(surfpal_models);
                         
                         // Update the custom_models field
                         existing_json["custom_models"] = serde_json::json!(merged_models);
                         existing_json
                     } else {
                         // Existing file is not valid JSON, create new
-                        serde_json::json!({ "custom_models": proxypal_models })
+                        serde_json::json!({ "custom_models": surfpal_models })
                     }
                 } else {
                     // Can't read file, create new
-                    serde_json::json!({ "custom_models": proxypal_models })
+                    serde_json::json!({ "custom_models": surfpal_models })
                 }
             } else {
                 // No existing config, create new
-                serde_json::json!({ "custom_models": proxypal_models })
+                serde_json::json!({ "custom_models": surfpal_models })
             };
             
             let config_str = serde_json::to_string_pretty(&final_config).map_err(|e| e.to_string())?;
@@ -4009,17 +4009,17 @@ export CODE_ASSIST_ENDPOINT="{}"
             
             // NOTE: Model mappings are configured in CLIProxyAPI's config.yaml (proxy-config.yaml),
             // NOT in Amp's settings.json. Amp CLI doesn't support amp.modelMapping setting.
-            // The mappings in ProxyPal settings are written to CLIProxyAPI config when proxy starts.
+            // The mappings in SurfPal settings are written to CLIProxyAPI config when proxy starts.
             // See: https://help.router-for.me/agent-client/amp-cli.html#model-fallback-behavior
             
-            // ProxyPal settings to add/update (only valid Amp CLI settings)
-            let proxypal_settings = serde_json::json!({
+            // SurfPal settings to add/update (only valid Amp CLI settings)
+            let surfpal_settings = serde_json::json!({
                 // Core proxy URL - routes all Amp traffic through CLIProxyAPI
                 "amp.url": amp_endpoint,
                 
                 // API key for authentication with the proxy
                 // This matches the api-keys in CLIProxyAPI config
-                "amp.apiKey": "proxypal-local",
+                "amp.apiKey": "surfpal-local",
                 
                 // Enable extended thinking for Claude models
                 "amp.anthropic.thinking.enabled": true,
@@ -4044,9 +4044,9 @@ export CODE_ASSIST_ENDPOINT="{}"
             let final_config = if config_path.exists() {
                 if let Ok(existing) = std::fs::read_to_string(&config_path) {
                     if let Ok(mut existing_json) = serde_json::from_str::<serde_json::Value>(&existing) {
-                        // Merge proxypal settings into existing config
+                        // Merge surfpal settings into existing config
                         if let Some(existing_obj) = existing_json.as_object_mut() {
-                            if let Some(new_obj) = proxypal_settings.as_object() {
+                            if let Some(new_obj) = surfpal_settings.as_object() {
                                 for (key, value) in new_obj {
                                     existing_obj.insert(key.clone(), value.clone());
                                 }
@@ -4058,27 +4058,27 @@ export CODE_ASSIST_ENDPOINT="{}"
                         existing_json
                     } else {
                         // Existing file is not valid JSON, create new
-                        proxypal_settings
+                        surfpal_settings
                     }
                 } else {
                     // Can't read file, create new
-                    proxypal_settings
+                    surfpal_settings
                 }
             } else {
                 // No existing config, create new
-                proxypal_settings
+                surfpal_settings
             };
             
             let settings_content = serde_json::to_string_pretty(&final_config).map_err(|e| e.to_string())?;
             std::fs::write(&config_path, &settings_content).map_err(|e| e.to_string())?;
             
             // Also provide env var option and API key instructions
-            let shell_config = format!(r#"# ProxyPal - Amp CLI Configuration (alternative to settings.json)
+            let shell_config = format!(r#"# SurfPal - Amp CLI Configuration (alternative to settings.json)
 export AMP_URL="{}"
-export AMP_API_KEY="proxypal-local"
+export AMP_API_KEY="surfpal-local"
 
 # For Amp cloud features, get your API key from https://ampcode.com/settings
-# and add it to ProxyPal Settings > Amp CLI Integration > Amp API Key
+# and add it to SurfPal Settings > Amp CLI Integration > Amp API Key
 "#, amp_endpoint);
             
             Ok(serde_json::json!({
@@ -4086,7 +4086,7 @@ export AMP_API_KEY="proxypal-local"
                 "configType": "both",
                 "configPath": config_path.to_string_lossy(),
                 "shellConfig": shell_config,
-                "instructions": "Amp CLI has been configured. Run 'amp' to start using it. The API key 'proxypal-local' is pre-configured for local proxy access."
+                "instructions": "Amp CLI has been configured. Run 'amp' to start using it. The API key 'surfpal-local' is pre-configured for local proxy access."
             }))
         },
         
@@ -4173,18 +4173,18 @@ export AMP_API_KEY="proxypal-local"
                 models_obj.insert(m.id.clone(), model_config);
             }
             
-            // Create or update opencode.json with proxypal provider
+            // Create or update opencode.json with surfpal provider
             // Use @ai-sdk/openai-compatible instead of @ai-sdk/anthropic to avoid
             // tool_use/tool_result ID mismatch issues with Antigravity Claude models
             let opencode_config = serde_json::json!({
                 "$schema": "https://opencode.ai/config.json",
                 "provider": {
-                    "proxypal": {
+                    "surfpal": {
                         "npm": "@ai-sdk/openai-compatible",
-                        "name": "ProxyPal",
+                        "name": "SurfPal",
                         "options": {
                             "baseURL": endpoint_v1,
-                            "apiKey": "proxypal-local"
+                            "apiKey": "surfpal-local"
                         },
                         "models": models_obj
                     }
@@ -4198,7 +4198,7 @@ export AMP_API_KEY="proxypal-local"
                         // Merge provider into existing config
                         if let Some(providers) = existing_json.get_mut("provider") {
                             if let Some(obj) = providers.as_object_mut() {
-                                obj.insert("proxypal".to_string(), opencode_config["provider"]["proxypal"].clone());
+                                obj.insert("surfpal".to_string(), opencode_config["provider"]["surfpal"].clone());
                             }
                         } else {
                             existing_json["provider"] = opencode_config["provider"].clone();
@@ -4222,7 +4222,7 @@ export AMP_API_KEY="proxypal-local"
                 "configType": "config",
                 "configPath": config_path.to_string_lossy(),
                 "modelsConfigured": models.len(),
-                "instructions": "ProxyPal provider added to OpenCode. Run 'opencode' and use /models to select a model (e.g., proxypal/gemini-2.5-pro). OpenCode uses AI SDK (ai-sdk.dev) and models.dev registry."
+                "instructions": "SurfPal provider added to OpenCode. Run 'opencode' and use /models to select a model (e.g., surfpal/gemini-2.5-pro). OpenCode uses AI SDK (ai-sdk.dev) and models.dev registry."
             }))
         },
         
@@ -4266,9 +4266,9 @@ fn append_to_shell_profile(content: String) -> Result<String, String> {
     // Read existing content
     let existing = std::fs::read_to_string(path).unwrap_or_default();
 
-    // Check if ProxyPal config already exists
-    if existing.contains("# ProxyPal") {
-        return Err("ProxyPal configuration already exists in shell profile. Please remove it first or update manually.".to_string());
+    // Check if SurfPal config already exists
+    if existing.contains("# SurfPal") {
+        return Err("SurfPal configuration already exists in shell profile. Please remove it first or update manually.".to_string());
     }
 
     // Append new config
@@ -4372,7 +4372,7 @@ fn detect_ai_tools() -> Vec<DetectedTool> {
     tools
 }
 
-// Configure Continue extension with ProxyPal endpoint
+// Configure Continue extension with SurfPal endpoint
 #[tauri::command]
 fn configure_continue(state: State<AppState>) -> Result<String, String> {
     let config = state.config.lock().unwrap();
@@ -4389,23 +4389,23 @@ fn configure_continue(state: State<AppState>) -> Result<String, String> {
     // Check if config already exists
     let existing_content = std::fs::read_to_string(&config_path).unwrap_or_default();
     
-    // If config exists and already has ProxyPal, update it
-    if existing_content.contains("ProxyPal") || existing_content.contains(&endpoint) {
-        return Ok("Continue is already configured with ProxyPal".to_string());
+    // If config exists and already has SurfPal, update it
+    if existing_content.contains("SurfPal") || existing_content.contains(&endpoint) {
+        return Ok("Continue is already configured with SurfPal".to_string());
     }
     
     // Create new config or append to existing
     let new_config = if existing_content.is_empty() {
-        format!(r#"# Continue configuration - Auto-configured by ProxyPal
-name: ProxyPal Config
+        format!(r#"# Continue configuration - Auto-configured by SurfPal
+name: SurfPal Config
 version: 0.0.1
 schema: v1
 
 models:
-  - name: ProxyPal (Auto-routed)
+  - name: SurfPal (Auto-routed)
     provider: openai
     model: gpt-4
-    apiKey: proxypal-local
+    apiKey: surfpal-local
     apiBase: {}
     roles:
       - chat
@@ -4413,13 +4413,13 @@ models:
       - apply
 "#, endpoint)
     } else {
-        // Append ProxyPal model to existing config
+        // Append SurfPal model to existing config
         format!(r#"{}
-  # Added by ProxyPal
-  - name: ProxyPal (Auto-routed)
+  # Added by SurfPal
+  - name: SurfPal (Auto-routed)
     provider: openai
     model: gpt-4
-    apiKey: proxypal-local
+    apiKey: surfpal-local
     apiBase: {}
     roles:
       - chat
@@ -4573,7 +4573,7 @@ async fn get_gemini_api_keys(state: State<'_, AppState>) -> Result<Vec<GeminiApi
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to fetch Gemini API keys: {}", e))?;
@@ -4596,7 +4596,7 @@ async fn set_gemini_api_keys(state: State<'_, AppState>, keys: Vec<GeminiApiKey>
     
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&body)
         .send()
         .await
@@ -4608,7 +4608,7 @@ async fn set_gemini_api_keys(state: State<'_, AppState>, keys: Vec<GeminiApiKey>
         return Err(format!("Failed to set Gemini API keys: {} - {}", status, text));
     }
     
-    // Persist to ProxyPal config for restart persistence
+    // Persist to SurfPal config for restart persistence
     {
         let mut config = state.config.lock().unwrap();
         config.gemini_api_keys = keys;
@@ -4644,7 +4644,7 @@ async fn get_claude_api_keys(state: State<'_, AppState>) -> Result<Vec<ClaudeApi
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to fetch Claude API keys: {}", e))?;
@@ -4667,7 +4667,7 @@ async fn set_claude_api_keys(state: State<'_, AppState>, keys: Vec<ClaudeApiKey>
     
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&body)
         .send()
         .await
@@ -4679,7 +4679,7 @@ async fn set_claude_api_keys(state: State<'_, AppState>, keys: Vec<ClaudeApiKey>
         return Err(format!("Failed to set Claude API keys: {} - {}", status, text));
     }
     
-    // Persist to ProxyPal config for restart persistence
+    // Persist to SurfPal config for restart persistence
     {
         let mut config = state.config.lock().unwrap();
         config.claude_api_keys = keys;
@@ -4715,7 +4715,7 @@ async fn get_codex_api_keys(state: State<'_, AppState>) -> Result<Vec<CodexApiKe
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to fetch Codex API keys: {}", e))?;
@@ -4738,7 +4738,7 @@ async fn set_codex_api_keys(state: State<'_, AppState>, keys: Vec<CodexApiKey>) 
     
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&body)
         .send()
         .await
@@ -4750,7 +4750,7 @@ async fn set_codex_api_keys(state: State<'_, AppState>, keys: Vec<CodexApiKey>) 
         return Err(format!("Failed to set Codex API keys: {} - {}", status, text));
     }
     
-    // Persist to ProxyPal config for restart persistence
+    // Persist to SurfPal config for restart persistence
     {
         let mut config = state.config.lock().unwrap();
         config.codex_api_keys = keys;
@@ -4926,7 +4926,7 @@ async fn get_openai_compatible_providers(state: State<'_, AppState>) -> Result<V
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to fetch OpenAI-compatible providers: {}", e))?;
@@ -4949,7 +4949,7 @@ async fn set_openai_compatible_providers(state: State<'_, AppState>, providers: 
     
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&body)
         .send()
         .await
@@ -5038,7 +5038,7 @@ async fn get_auth_files(state: State<'_, AppState>) -> Result<Vec<AuthFile>, Str
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to fetch auth files: {}", e))?;
@@ -5105,7 +5105,7 @@ async fn upload_auth_file(state: State<'_, AppState>, file_path: String, provide
     
     let response = client
         .post(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .multipart(form)
         .send()
         .await
@@ -5129,7 +5129,7 @@ async fn delete_auth_file(state: State<'_, AppState>, file_id: String) -> Result
     let client = build_management_client();
     let response = client
         .delete(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to delete auth file: {}", e))?;
@@ -5152,7 +5152,7 @@ async fn toggle_auth_file(state: State<'_, AppState>, file_id: String, disabled:
     let client = build_management_client();
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({ "value": disabled }))
         .send()
         .await
@@ -5176,7 +5176,7 @@ async fn download_auth_file(state: State<'_, AppState>, file_id: String, filenam
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to download auth file: {}", e))?;
@@ -5209,7 +5209,7 @@ async fn delete_all_auth_files(state: State<'_, AppState>) -> Result<(), String>
     let client = build_management_client();
     let response = client
         .delete(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to delete all auth files: {}", e))?;
@@ -5236,7 +5236,7 @@ async fn get_max_retry_interval(state: State<'_, AppState>) -> Result<i32, Strin
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get max retry interval: {}", e))?;
@@ -5258,7 +5258,7 @@ async fn set_max_retry_interval(state: State<'_, AppState>, value: i32) -> Resul
     let client = build_management_client();
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({ "value": value }))
         .send()
         .await
@@ -5282,7 +5282,7 @@ async fn get_websocket_auth(state: State<'_, AppState>) -> Result<bool, String> 
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get WebSocket auth: {}", e))?;
@@ -5304,7 +5304,7 @@ async fn set_websocket_auth(state: State<'_, AppState>, value: bool) -> Result<(
     let client = build_management_client();
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({ "value": value }))
         .send()
         .await
@@ -5328,7 +5328,7 @@ async fn get_prioritize_model_mappings(state: State<'_, AppState>) -> Result<boo
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get prioritize model mappings: {}", e))?;
@@ -5350,7 +5350,7 @@ async fn set_prioritize_model_mappings(state: State<'_, AppState>, value: bool) 
     let client = build_management_client();
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&serde_json::json!({ "value": value }))
         .send()
         .await
@@ -5374,7 +5374,7 @@ async fn get_oauth_excluded_models(state: State<'_, AppState>) -> Result<std::co
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get OAuth excluded models: {}", e))?;
@@ -5425,7 +5425,7 @@ async fn set_oauth_excluded_models(
     
     let response = client
         .patch(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .json(&body)
         .send()
         .await
@@ -5452,7 +5452,7 @@ async fn delete_oauth_excluded_models(
     let client = build_management_client();
     let response = client
         .delete(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to delete OAuth excluded models: {}", e))?;
@@ -5475,7 +5475,7 @@ async fn get_config_yaml(state: State<'_, AppState>) -> Result<String, String> {
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get config YAML: {}", e))?;
@@ -5498,7 +5498,7 @@ async fn set_config_yaml(state: State<'_, AppState>, yaml: String) -> Result<(),
     let client = build_management_client();
     let response = client
         .put(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .header("Content-Type", "application/yaml")
         .body(yaml)
         .send()
@@ -5523,7 +5523,7 @@ async fn get_request_error_logs(state: State<'_, AppState>) -> Result<Vec<String
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get request error logs: {}", e))?;
@@ -5557,7 +5557,7 @@ async fn get_request_error_log_content(state: State<'_, AppState>, filename: Str
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get error log content: {}", e))?;
@@ -5608,7 +5608,7 @@ async fn get_logs(state: State<'_, AppState>, lines: Option<u32>) -> Result<Vec<
     let client = build_management_client();
     let response = client
         .get(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to get logs: {}", e))?;
@@ -5738,7 +5738,7 @@ async fn clear_logs(state: State<'_, AppState>) -> Result<(), String> {
     let client = build_management_client();
     let response = client
         .delete(&url)
-        .header("X-Management-Key", "proxypal-mgmt-key")
+        .header("X-Management-Key", "surfpal-mgmt-key")
         .send()
         .await
         .map_err(|e| format!("Failed to clear logs: {}", e))?;
@@ -5790,10 +5790,10 @@ fn get_tool_setup_info(tool_id: String, state: State<AppState>) -> Result<serde_
                 }
             ],
             "manualConfig": format!(r#"models:
-  - name: ProxyPal
+  - name: SurfPal
     provider: openai
     model: gpt-4
-    apiKey: proxypal-local
+    apiKey: surfpal-local
     apiBase: {}"#, endpoint),
             "endpoint": endpoint
         }),
@@ -5812,13 +5812,13 @@ fn get_tool_setup_info(tool_id: String, state: State<AppState>) -> Result<serde_
                 },
                 {
                     "title": "Set Base URL",
-                    "description": "Enter the ProxyPal endpoint:",
+                    "description": "Enter the SurfPal endpoint:",
                     "copyable": endpoint.clone()
                 },
                 {
                     "title": "Set API Key",
-                    "description": "Enter: proxypal-local",
-                    "copyable": "proxypal-local".to_string()
+                    "description": "Enter: surfpal-local",
+                    "copyable": "surfpal-local".to_string()
                 },
                 {
                     "title": "Select Model",
@@ -5877,7 +5877,7 @@ pub fn run() {
     // Clean up any orphaned cliproxyapi processes from previous crashes
     #[cfg(unix)]
     {
-        println!("[ProxyPal] Cleaning up orphaned cliproxyapi processes on startup");
+        println!("[SurfPal] Cleaning up orphaned cliproxyapi processes on startup");
         let _ = std::process::Command::new("sh")
             .args(["-c", "pkill -9 -f cliproxyapi 2>/dev/null"])
             .output();
@@ -6061,7 +6061,7 @@ pub fn run() {
                             if close_to_tray {
                                 // Hide to tray instead of closing
                                 if let Some(window) = app_handle.get_webview_window("main") {
-                                    println!("[ProxyPal] Hiding to system tray...");
+                                    println!("[SurfPal] Hiding to system tray...");
                                     let _ = window.hide();
                                 }
                                 api.prevent_close();
@@ -6076,14 +6076,14 @@ pub fn run() {
                         // Kill cliproxyapi process
                         if let Ok(mut process_guard) = state.proxy_process.lock() {
                             if let Some(child) = process_guard.take() {
-                                println!("[ProxyPal] Shutting down cliproxyapi...");
+                                println!("[SurfPal] Shutting down cliproxyapi...");
                                 let _ = child.kill();
                             }
                         }
                         // Kill copilot-api process
                         if let Ok(mut process_guard) = state.copilot_process.lock() {
                             if let Some(child) = process_guard.take() {
-                                println!("[ProxyPal] Shutting down copilot-api...");
+                                println!("[SurfPal] Shutting down copilot-api...");
                                 let _ = child.kill();
                             }
                         }

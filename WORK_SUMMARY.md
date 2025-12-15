@@ -1,4 +1,4 @@
-# ProxyPal Development Summary
+# SurfPal Development Summary
 
 ## Session 3 - CLIProxyAPI Update
 
@@ -25,7 +25,7 @@
 - **v6.6.4:** Fixed critical issue #492 - OpenAI model provider resolution bug
 - **v6.6.5:** Fixed GPT-5.2 missing "none" reasoning effort level
 
-**Impact on ProxyPal:**
+**Impact on SurfPal:**
 
 - ✅ GPT-5.2 model now available in model selection
 - ✅ Fixes "unknown provider for model gpt-5.1-codex-low" errors
@@ -37,7 +37,7 @@
 
 **Next Steps:**
 
-- Verify GPT-5.2 appears in ProxyPal UI model list
+- Verify GPT-5.2 appears in SurfPal UI model list
 - Test OpenAI/Codex models work without provider errors
 - Consider exposing reasoning effort levels in UI
 

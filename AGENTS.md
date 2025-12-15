@@ -1,4 +1,4 @@
-# ProxyPal Development Guidelines
+# SurfPal Development Guidelines
 
 ## Commands
 
