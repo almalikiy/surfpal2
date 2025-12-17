@@ -1,0 +1,8 @@
+port: 8317
+auth-dir: "C:\\Users\\lgitin\\.cli-proxy-api"
+api-keys:
+  - "surfpal-local"
+remote-management:
+  allow-remote: true
+  secret-key: "$2a$10$qXibztQDo4HMeeVlEb18Je2q9AGcA2lHzfQ5vhw3gY9yjyj8hU27a"
+  disable-control-panel: true

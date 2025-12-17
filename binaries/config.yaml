@@ -1,0 +1,21 @@
+# config.yml untuk ProxyPal Codex Login
+
+# Port proxy lokal yang akan dibuka
+proxy:
+  host: 127.0.0.1
+  port: 8317
+
+# File tempat menyimpan token OAuth Codex
+auth:
+  provider: codex
+  token_file: ./codex_token.json
+
+# Opsi login
+login:
+  method: oauth
+  no_browser: false   # true jika tidak ingin browser otomatis terbuka
+
+# Logging
+log:
+  level: info
+  file: ./proxypal.log

@@ -37,3 +37,16 @@ src-tauri/target/
 src-tauri/logs/
 *.key
 *.pub
+binaries/codex_token.json
+binaries/cliproxyapi-x86_64-pc-windows-msvc.exe
+.vs/surfpal2.slnx/FileContentIndex/5dfea38a-11ea-4ef2-91c7-fbbc64ae704c.vsidx
+.vs/VSWorkspaceState.json
+.vs/surfpal2.slnx/FileContentIndex/8e11b673-243d-4097-b07a-79f5a1a829c8.vsidx
+.vs/surfpal2.slnx/FileContentIndex/53c821a5-d284-481f-90f3-6629e67b4288.vsidx
+.vs/surfpal2.slnx/FileContentIndex/12740e63-a689-4c19-bce4-bcaae2ec52fa.vsidx
+.vs/surfpal2.slnx/FileContentIndex/fb958e3a-0546-44b5-a8a3-a3bd47156991.vsidx
+.vs/surfpal2.slnx/v18/.wsuo
+.vs/surfpal2.slnx/v18/DocumentLayout.json
+.vs/slnx.sqlite
+.vs/slnx.sqlite
+.vs/slnx.sqlite
